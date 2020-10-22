@@ -77,6 +77,8 @@ class Main {
     int test6[] = { 5, 1, 1, 1, 1, 1, 1 }; // {6},{5} or {5},{6} False
     int test7[] = { 1, 1, 1, 1, 4 }; // {4},{4} True
     int test8[] = { 1, 1, 1, 1, 1, 1, 5 }; // {6},{5} or {5},{6} False
+    int test9[] = { 1, 0 }; // {1},{} false
+    int test10[] = { 0, 1, 0 }; // {1},{} false
 
     boolean results[] = {
       true,
@@ -86,40 +88,36 @@ class Main {
       true,
       false,
       true,
+        false, false,
       false
     };
 
     TestCase tests[] = {
-      new TestCase(test1, true),
-      new TestCase(test2, false),
-      new TestCase(test3, true),
-      new TestCase(test4, false),
-      new TestCase(test5, true),
-      new TestCase(test6, false),
-      new TestCase(test7, true),
-      new TestCase(test8, false)
-    };
+        new TestCase(test1, results[0]), new TestCase(test2, results[1]), new TestCase(test3, results[2]),
+        new TestCase(test4, results[3]), new TestCase(test5, results[4]), new TestCase(test6, results[5]),
+        new TestCase(test7, results[6]), new TestCase(test8, results[7]), new TestCase(test9, results[8]),
+        new TestCase(test10, results[9]), };
     List<Object> the_result;
 
+    int count_results = 0;
+    boolean result_of_test;
     for (int i = 0; i < tests.length; i++) {
       the_result = canSplitEqually(tests[i].test);
+      result_of_test = Boolean.valueOf(the_result.get(0).toString()) == tests[i].result;
       System.out.println(String.valueOf(i + 1) + ". "
-          + (Boolean.valueOf(the_result.get(0).toString()) == tests[i].result ? "Correct" : "Incorrect"));
+          + (result_of_test ? "Correct" : "Incorrect"));
+      if (result_of_test == false) {
+        System.out.format("FAILURE after %d tests !!!", count_results);
+        System.exit(0);
+      }
 
       System.out.println("Timing result: " + the_result.get(1));
       System.out.println("\n");
+      count_results++;
     }
 
-    /*
-    System.out.println("1. " + (canSplitEqually(test1) == true ? "Correct" : "Incorrect"));
-    System.out.println("2. " + (canSplitEqually(test2) == false ? "Correct" : "Incorrect"));
-    System.out.println("3. " + (canSplitEqually(test3) == true ? "Correct" : "Incorrect"));
-    System.out.println("4. " + (canSplitEqually(test4) == false ? "Correct" : "Incorrect"));
-    System.out.println("5. " + (canSplitEqually(test5) == true ? "Correct" : "Incorrect"));
-    System.out.println("6. " + (canSplitEqually(test6) == false ? "Correct" : "Incorrect"));
-    System.out.println("7. " + (canSplitEqually(test7) == true ? "Correct" : "Incorrect"));
-    System.out.println("8. " + (canSplitEqually(test8) == false ? "Correct" : "Incorrect"));
-    */
+    System.out.format("SUCCESS after %d of %d tests !!!", count_results, tests.length);
+
   }
 
   public static void main(String[] args) {
