@@ -35,7 +35,7 @@ class Main {
    goal:  split to make equal ?  
    
    */
-   public static int findSplitPoint(int arr[], int n) {
+  public static int findSplitPoint1(int arr[], int n) {
       int leftSum = 0 ;
       
       for (int i = 0; i < n; i++) {
@@ -50,12 +50,12 @@ class Main {
       }
       
       return -1;
-   }
-   
-  public static List<Object> canSplitEqually(int[] nums) {
+  }
+  
+  public static List<Object> canSplitEqually1(int[] nums) {
     // Write your code here
     long startTime1 = System.nanoTime();
-    int splitPoint = findSplitPoint(nums, nums.length);
+    int splitPoint = findSplitPoint1(nums, nums.length);
     long endTime1 = System.nanoTime();
 
     long result1 = endTime1 - startTime1;
@@ -101,8 +101,9 @@ class Main {
 
     int count_results = 0;
     boolean result_of_test;
+    long total_run_times = 0;
     for (int i = 0; i < tests.length; i++) {
-      the_result = canSplitEqually(tests[i].test);
+      the_result = canSplitEqually1(tests[i].test);
       result_of_test = Boolean.valueOf(the_result.get(0).toString()) == tests[i].result;
       System.out.println(String.valueOf(i + 1) + ". "
           + (result_of_test ? "Correct" : "Incorrect"));
@@ -111,12 +112,14 @@ class Main {
         System.exit(0);
       }
 
+      total_run_times = total_run_times + Long.valueOf(the_result.get(1).toString());
       System.out.println("Timing result: " + the_result.get(1));
       System.out.println("\n");
       count_results++;
     }
 
-    System.out.format("SUCCESS after %d of %d tests !!!", count_results, tests.length);
+    long average_run_time = total_run_times / tests.length;
+    System.out.format("SUCCESS after %d of %d tests for %d !!!", count_results, tests.length, average_run_time);
 
   }
 
