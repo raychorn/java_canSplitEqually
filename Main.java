@@ -1,6 +1,8 @@
-import java.io.*;
-import java.util.*;
 
+//import java.io.*;
+import java.util.*;
+import java.util.concurrent.*;
+import java.util.concurrent.Executors;
 class TestCase 
 { 
     boolean result;  
@@ -48,21 +50,58 @@ class Main {
     // for the inner loop.
     // This time we use the function above to compute the inner loop sums,
     // let's create a baseline to see if this adds any overhead to the original.
+
+    // Use of threading was NOT faster because time is required to setup the
+    // background
+    // threads and time is required to collect the results from all those threads
+    // and
+    // more code was required to handle this method.
+    ThreadPoolExecutor executor = (ThreadPoolExecutor) Executors.newCachedThreadPool();
+
+    List<Future<Integer>> futures = new ArrayList<Future<Integer>>();
+
+    List<Integer> left_sums = new ArrayList<Integer>();
+
+    /*
+     * int total_sum = 0; for (int i = 0; i < n; i++) { total_sum += arr[i]; }
+     */
+
     int leftSum = 0;
     for (int i = 0; i < n; i++) {
       leftSum += arr[i];
-      int rightSum = 0;
+      left_sums.add(leftSum);
 
-      rightSum = array_slice_sum(arr, i);
-      /*
-       * for (int j = i + 1; j < n; j++) rightSum += arr[j];
-       */
+      int[] valueArr = { i };
+      Future<Integer> future = executor.submit(() -> {
+        int right_sum = array_slice_sum(arr, valueArr[0]);
+        return right_sum;
+      });
+      futures.add(future);
+    }
+    executor.shutdown();
 
-      if (leftSum == rightSum)
-        return i + 1;
+    int left_sums_ptr = 0;
+    Integer rightSum = 0;
+    int first_equals_ptr = -1;
+    for (Future<Integer> future : futures) {
+      try {
+        rightSum = future.get();
+      } catch (InterruptedException | ExecutionException e) {
+        rightSum = 0;
+        // System.out.println("Could not get the future. " + e.toString());
+      }
+      int left_sum_value = left_sums.get(left_sums_ptr);
+      // System.out.println("leftSum: " + left_sum_value + ", rightSum: " + rightSum +
+      // ", totalSum: " + total_sum + ", check-sum: " + (left_sum_value + rightSum) +
+      // ", --> " + (total_sum - (left_sum_value + rightSum)));
+      // System.out.println("left_sums: " + left_sums.toString());
+      if ((first_equals_ptr == -1) && (left_sum_value == rightSum))
+        first_equals_ptr = left_sums_ptr + 1;
+
+      left_sums_ptr++;
     }
 
-    return -1;
+    return first_equals_ptr;
   }
 
   public static int findSplitPoint1(int arr[], int n) {
@@ -186,14 +225,16 @@ class Main {
 
     long average_run_time1 = total_run_times1 / tests.length;
     long average_run_time2 = total_run_times2 / tests.length;
-    System.out.format("SUCCESS after %d of %d tests for %d !!!\n", count_results, tests.length, average_run_time1);
-    System.out.format("SUCCESS after %d of %d tests for %d !!!\n", count_results, tests.length, average_run_time2);
+    System.out.format("Method 1 :: SUCCESS after %d of %d tests for %d !!!\n", count_results, tests.length,
+        average_run_time1);
+    System.out.format("Method 2 :: SUCCESS after %d of %d tests for %d !!!\n", count_results, tests.length,
+        average_run_time2);
 
     String faster_or_slower = "faster";
     long faster_or_slower_time = 0;
     if (average_run_time1 < average_run_time2) {
       faster_or_slower_time = average_run_time2 - average_run_time1;
-      faster_or_slower = "slower";
+      faster_or_slower = "faster";
     }
     System.out.format("Method 1 was %s than Method 2 by %d !!!\n", faster_or_slower, faster_or_slower_time);
   }
