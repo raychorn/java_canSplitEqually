@@ -103,12 +103,14 @@ class Main {
 
     for (int i = 0; i < tests.length; i++) {
       the_result = canSplitEqually(tests[i].test);
-      System.out.println(String.valueOf(i+1) + ". " + (the_result.get(0) == tests[i].result ? "Correct" : "Incorrect"));
+      System.out.println(String.valueOf(i + 1) + ". "
+          + (Boolean.valueOf(the_result.get(0).toString()) == tests[i].result ? "Correct" : "Incorrect"));
 
       System.out.println("Timing result: " + the_result.get(1));
       System.out.println("\n");
     }
 
+    /*
     System.out.println("1. " + (canSplitEqually(test1) == true ? "Correct" : "Incorrect"));
     System.out.println("2. " + (canSplitEqually(test2) == false ? "Correct" : "Incorrect"));
     System.out.println("3. " + (canSplitEqually(test3) == true ? "Correct" : "Incorrect"));
@@ -117,6 +119,7 @@ class Main {
     System.out.println("6. " + (canSplitEqually(test6) == false ? "Correct" : "Incorrect"));
     System.out.println("7. " + (canSplitEqually(test7) == true ? "Correct" : "Incorrect"));
     System.out.println("8. " + (canSplitEqually(test8) == false ? "Correct" : "Incorrect"));
+    */
   }
 
   public static void main(String[] args) {
