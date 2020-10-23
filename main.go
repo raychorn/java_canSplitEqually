@@ -18,7 +18,7 @@ type TestCase struct {
 
 func (t *TestCase) asString() string {
 	sOut := ""
-	//sOut := fmt.Sprintf("\n%s -> %t (%t)\n", rle.ArrayAsString(rle.RunLengthEncode(t.test)), t.result, t.actual)
+	fmt.Printf("%s\n", rle.ArrayAsString(rle.RunLengthEncode(t.test)))
 	//sOut += fmt.Sprintf("%s -> %t (%t)\n", rle.ArrayAsString(t.test), t.result, t.actual)
 	value := rle.ArrayAsString(t.test)
 	runes := []rune(value)

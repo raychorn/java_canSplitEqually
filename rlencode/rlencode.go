@@ -2,6 +2,71 @@ package rlencode
 
 import "fmt"
 
+type rle struct {
+    current int
+    num int
+    encoded []int
+    debug bool
+}
+
+func (r *rle) init(args ...interface{}) {
+    r.current = -1
+    r.num = 0
+    r.encoded = []int{}
+    r.debug = false
+}
+
+func (r *rle) asString() string {
+    return fmt.Sprintf("current=%d, num=%d, encoded=%s\n", r.current, r.num, ArrayAsString(r.encoded))
+}
+
+func (r *rle) add(val int) {
+    if (r.debug) {
+        fmt.Printf("(1) %d -> %s", val, r.asString())
+    }
+    if (r.current == -1) {
+        r.current = val
+        r.num = 1
+        r.encoded = append(r.encoded, val)
+        if (r.debug) {
+            fmt.Printf("\t(2) -> %s", r.asString())
+        }
+    } else {
+        if (r.current == val) {
+            r.num++
+            if (r.debug) {
+                fmt.Printf("\t(3) -> %s", r.asString())
+            }
+        } else {
+            if (r.num > 1) {
+                r.encoded = append(r.encoded, -(r.num-1))
+                r.current = val
+                r.num = 1
+                r.encoded = append(r.encoded, val)
+                if (r.debug) {
+                    fmt.Printf("\t(4) -> %s", r.asString())
+                }
+            } else {
+                r.current = val
+                r.num = 1
+                r.encoded = append(r.encoded, val)
+                if (r.debug) {
+                    fmt.Printf("\t(5) -> %s", r.asString())
+                }
+            }
+        }
+    }
+}
+
+func (r *rle) flush() {
+    if (r.num > 1) {
+        r.encoded = append(r.encoded, -(r.num-1))
+        if (r.debug) {
+            fmt.Printf("\t(4) -> %s", r.asString())
+        }
+    }
+}
+
 type runLength struct {
     enc, dec func([]int) []int
 }
@@ -23,40 +88,13 @@ func ArrayAsString(items []int) string {
 func newRunLength() *runLength {
     return &runLength{
         enc: func(input []int) []int {
-            var result []int
-            n := len(input)
-            for i := 0; i < n; i++ {
-                val := input[i]
-                //fmt.Printf("(1) val=%d\n", val)
-                count := 1
-                j := i+1
-                jj := j
-                for ; j < n; j++ {
-                    val2 := input[j]
-                    //fmt.Printf("(2) val2=%d\n", val2)
-                    if (val == val2) {
-                        count++
-                        //fmt.Printf("(3) count=%d\n", count)
-                        continue
-                    } else {
-                        jj = j
-                        //fmt.Printf("(4) jj=%d\n", jj)
-                        break
-                    }
-                }
-                if (count > 2) {
-                    result = append(result, val)
-                    result = append(result, -count)
-                    i = jj-1
-                    //fmt.Printf("(5) i=%d, %s\n", i, ArrayAsString(result))
-                } else {
-                    result = append(result, val)
-                    //fmt.Printf("(6) i=%d, %s\n", i, ArrayAsString(result))
-                }
-                //fmt.Println("")
+            processor := new(rle)
+            processor.init()
+            for _, item := range input {
+                processor.add(item)
             }
-            //fmt.Println("======================================")
-            return result
+            processor.flush()
+            return processor.encoded
         },
         dec: func(input []int) []int {
             var result []int
