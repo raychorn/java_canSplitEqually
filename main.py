@@ -112,12 +112,10 @@ if (__name__ == '__main__'):
     test_cases[20] = [[1] * 101, False]
 
 
-    count_results = 0;
     result_of_test = None
     total_run_times = 0
 
     test_num = 1
-    count_results = 0
     i_value = 0
     for i, vector in test_cases.items():
         test_data, result = tuple(vector)
@@ -126,7 +124,7 @@ if (__name__ == '__main__'):
         print('{}. {} -> {}'.format(test_num, "Correct" if (result_of_test) else "Incorrect", test_data))
 
         if (result_of_test == False):
-            print("FAILURE after {} tests !!!".format(count_results))
+            print("FAILURE after {} tests !!!".format(test_num))
             sys.exit(0)
         test_num += 1
         print()
